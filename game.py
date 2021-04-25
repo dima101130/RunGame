@@ -24,13 +24,6 @@ FPS = 100
 
 soundVictory = pygame.mixer.Sound("win.wav")
 
-
-countEnemyX = 0
-countEnemyX2 = 0
-
-countEnemyY = 0
-countEnemyY2 = 0
-
 vTrue = False
 
 class Player(pygame.sprite.Sprite):
@@ -39,8 +32,8 @@ class Player(pygame.sprite.Sprite):
 		self.image = pygame.Surface((p_width,p_height))
 		self.image.fill((0,0,255))
 		self.rect = self.image.get_rect()
-		self.rect.centerx = 60
-		self.rect.bottom = 60
+		self.rect.centerx = 79
+		self.rect.bottom = 12
 		self.speedx = 0
 		self.speedy = 0
 
@@ -63,7 +56,6 @@ class Player(pygame.sprite.Sprite):
 
 		self.rect.y += self.speedy
 		self.rect.x += self.speedx
-
 
 class Enemy_x(pygame.sprite.Sprite):
 	def __init__(self,spawn_c,spawn_b,xspeed):
@@ -158,91 +150,103 @@ class Victory(pygame.sprite.Sprite):
 		self.rect.bottom = 640 - 10
 
 clock = pygame.time.Clock()
-
 win = pygame.display.set_mode((width,height))
 pygame.display.set_caption("Game")
 
-all_sprite_player = pygame.sprite.Group()
-all_sprite_enemy = pygame.sprite.Group()
-all_sprite_enemy2 = pygame.sprite.Group()
-all_sprite_nps = pygame.sprite.Group()
-
-all_sprite_victory = pygame.sprite.Group()
-
-player = Player()
-
-victory = Victory()
-
-all_sprite_player.add(player)
-all_sprite_player.add(victory)
-all_sprite_victory.add(victory)
-
-for i in range(11):
-	countEnemyX += 60
-	enemy = Enemy_x(width/2,countEnemyX,2)
-	all_sprite_player.add(enemy)
-	all_sprite_enemy.add(enemy)
-
-for i in range(11):
-	enemy = Enemy_x(width/2,countEnemyX2,-2)
-	all_sprite_player.add(enemy)
-	all_sprite_enemy.add(enemy)
-	countEnemyX2 += 60
+def startMain():
+	countEnemyX = 0
+	countEnemyX2 = 0
+	countEnemyY = 0
+	countEnemyY2 = 0
 
 
+	all_sprite_player = pygame.sprite.Group()
+	all_sprite_enemy = pygame.sprite.Group()
+	all_sprite_enemy2 = pygame.sprite.Group()
+	all_sprite_nps = pygame.sprite.Group()
 
-for i in range(40):
-	nps = Nps(width/2,height/2)
-	all_sprite_player.add(nps)
-	all_sprite_nps.add(nps)
+	all_sprite_victory = pygame.sprite.Group()
+
+	player = Player()
+
+	victory = Victory()
+
+	all_sprite_player.add(player)
+	all_sprite_player.add(victory)
+	all_sprite_victory.add(victory)
+
+	for i in range(11):
+		countEnemyX += 60
+		enemy = Enemy_x(width/2,countEnemyX,2)
+		all_sprite_player.add(enemy)
+		all_sprite_enemy.add(enemy)
+
+	for i in range(11):
+		enemy = Enemy_x(width/2,countEnemyX2,-2)
+		all_sprite_player.add(enemy)
+		all_sprite_enemy.add(enemy)
+		countEnemyX2 += 60
+
+
+
+	for i in range(40):
+		nps = Nps(width/2,height/2)
+		all_sprite_player.add(nps)
+		all_sprite_nps.add(nps)
 
 
 
 
-for i in range(11):
-	countEnemyY += 60
-	enemy2 = Enemy_y(countEnemyY,height/2,2)
-	all_sprite_player.add(enemy2)
-	all_sprite_enemy2.add(enemy2)
+	for i in range(11):
+		countEnemyY += 60
+		enemy2 = Enemy_y(countEnemyY,height/2,2)
+		all_sprite_player.add(enemy2)
+		all_sprite_enemy2.add(enemy2)
 
-for i in range(11):
-	enemy2 = Enemy_y(countEnemyY2,height/2,-2)
-	all_sprite_player.add(enemy2)
-	all_sprite_enemy2.add(enemy2)
-	countEnemyY2 += 60
+	for i in range(11):
+		enemy2 = Enemy_y(countEnemyY2,height/2,-2)
+		all_sprite_player.add(enemy2)
+		all_sprite_enemy2.add(enemy2)
+		countEnemyY2 += 60
 
+	while True:
+		clock.tick(FPS)
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				exit()
 
-while True:
-	clock.tick(FPS)
-	for event in pygame.event.get():
-		if event.type == pygame.QUIT:
+		all_sprite_player.update()
+		all_sprite_enemy.update()
+		all_sprite_enemy2.update()
+		all_sprite_nps.update()
+
+		kils_player = pygame.sprite.spritecollide(player,all_sprite_enemy,False)
+		kils_player2 = pygame.sprite.spritecollide(player,all_sprite_enemy2,False)
+		kils_player3 = pygame.sprite.spritecollide(player,all_sprite_nps,False)
+		win_player = pygame.sprite.spritecollide(player,all_sprite_victory,False)
+
+		if kils_player:
+			return
+
+		elif win_player:
+			soundVictory.play()
+			time.sleep(5)
 			exit()
 
-	all_sprite_player.update()
-	all_sprite_enemy.update()
-	all_sprite_enemy2.update()
-	all_sprite_nps.update()
+		elif kils_player2:
+			return
 
-	kils_player = pygame.sprite.spritecollide(player,all_sprite_enemy,False)
-	kils_player2 = pygame.sprite.spritecollide(player,all_sprite_enemy2,False)
-	kils_player3 = pygame.sprite.spritecollide(player,all_sprite_nps,False)
-	win_player = pygame.sprite.spritecollide(player,all_sprite_victory,False)
+		elif kils_player3:
+			return
 
-	if kils_player:
-		exit()
+		win.fill((0,0,0))
+		all_sprite_player.draw(win)
+		pygame.display.flip()
 
-	elif win_player:
-		soundVictory.play()
-		time.sleep(5)
-		exit()
+def startGame():
+	while True:
+		startMain()
 
-	elif kils_player2:
-		exit()
+startGame()
 
-	elif kils_player3:
-		exit()
-
-	win.fill((0,0,0))
-	all_sprite_player.draw(win)
-	pygame.display.flip()
 pygame.QUIT
