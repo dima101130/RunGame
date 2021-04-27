@@ -9,6 +9,10 @@ import sys
 pygame.init()
 pygame.mixer.init()
 
+pygame.mixer.music.load("musik.wav")
+pygame.mixer.music.play()
+
+
 width = 640
 height = 640
 width_half = width/2
@@ -25,6 +29,8 @@ FPS = 100
 soundVictory = pygame.mixer.Sound("win.wav")
 
 vTrue = False
+
+#d
 
 class Player(pygame.sprite.Sprite):
 	def __init__(self):
@@ -229,6 +235,7 @@ def startMain():
 			return
 
 		elif win_player:
+			pygame.mixer.music.pause()
 			soundVictory.play()
 			time.sleep(5)
 			exit()
